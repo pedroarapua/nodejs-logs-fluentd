@@ -1,18 +1,5 @@
 version: "3"
 services:
-  web:
-    container_name: 'web'
-    image: httpd
-    ports:
-      - "80:80"
-    depends_on:
-      - fluentd
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: application.httpd
-
   fluentd:
     container_name: 'fluentd'
     build: ./fluentd
@@ -43,3 +30,21 @@ services:
       - elasticsearch
     ports:
       - "5601:5601"
+  
+  nodejs-web-app:
+    container_name: 'nodejs-web-app'
+    build:
+      context: nodejs-web-app
+    ports:
+      - 8080:8080
+    environment: 
+      PORT: 8080
+    expose:
+      - 8080
+    depends_on:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: application.nodejs-web-app
